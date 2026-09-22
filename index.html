@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>diet Wedge</title>
+<meta name="description" content="Diet Wedge grapefruit. Discontinued. Still here.">
+<meta property="og:title" content="diet Wedge">
+<meta property="og:description" content="Grapefruit. Discontinued. Still here.">
+<meta name="theme-color" content="#08130f">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+<style>
+  /*
+   * One object in a dim room: a 20 oz bottle of Diet Wedge, with the label as
+   * real text. The front says what the soda was. The back — reached the way
+   * you reach the back of any bottle, by turning it — is a Nutrition Facts
+   * panel that is quietly about a person. Nothing explains that.
+   *
+   * THE GLASS IS A PHOTOGRAPH (bottle.webp, generated, shot on black) and the
+   * label is a cylinder of real text standing over its blank silver band. The
+   * band's own brushed metal and lighting show through; only the printed parts
+   * are painted on top. Forty narrow faces stand around the body, each showing
+   * its own slice of one continuous strip — front design on one half, the
+   * facts on the other — so turning the bottle is a genuine rotation and the
+   * edges foreshorten on their own.
+   *
+   * The photo's black background is dropped into the room with
+   * mix-blend-mode:screen. That only works if nothing between the image and
+   * <body> is a stacking context, which is why the image is a sibling of the
+   * label stage rather than inside it: container-type creates one, and so
+   * would a filter or a z-index.
+   *
+   * Everything on the label is sized in cqw (the stage's width), so it scales
+   * with the bottle from a phone to a desktop without a breakpoint.
+   */
+  :root{
+    --room:#08130f;
+    --leaf:#0E7A3F; --leaf-deep:#0A5A2E;
+    --cream:#FBFAF6; --black:#121212;
+  }
+  *{box-sizing:border-box}
+  html{background:var(--room)}
+  body{
+    margin:0; min-height:100svh; color:var(--cream);
+    font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:
+      radial-gradient(ellipse 34% 22% at 22% -6%, rgba(255,214,150,.22), transparent 70%),
+      radial-gradient(ellipse 60% 44% at 50% 44%, rgba(70,214,140,.30), transparent 66%),
+      var(--room);
+    display:grid; place-items:start center;
+    padding:max(28px, env(safe-area-inset-top)) 16px max(28px, env(safe-area-inset-bottom));
+    overflow-x:hidden; position:relative;
+  }
+  /* The counter it is standing on. */
+  body::before{
+    content:""; position:fixed; left:0; right:0; bottom:0; height:26vh; z-index:0;
+    background:linear-gradient(180deg, rgba(120,88,60,0) 0%, rgba(120,88,60,.14) 30%, rgba(60,44,30,.34) 100%);
+    pointer-events:none;
+  }
+  .fizz{position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0}
+  .fizz i{
+    position:absolute; bottom:-30px; border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, rgba(255,255,255,.55), rgba(70,214,140,.18) 55%, transparent 70%);
+    animation:rise linear infinite; opacity:0;
+  }
+  @keyframes rise{
+    0%{transform:translateY(0) translateX(0); opacity:0}
+    12%{opacity:.85}
+    100%{transform:translateY(-110vh) translateX(var(--sway,0)); opacity:0}
+  }
+
+  /* No z-index here on purpose — see the note at the top. */
+  main{position:relative; width:100%; display:grid; justify-items:center}
+
+  /* ---- The bottle -------------------------------------------------------- */
+  /* The crop is 834x2595: a 20 oz bottle is tall, and this is its real shape. */
+  .bottle{
+    appearance:none; border:0; padding:0; margin:0; background:none; color:inherit;
+    font:inherit; cursor:pointer; display:block; position:relative;
+    width:min(340px, 84vw); aspect-ratio:834/2595;
+    text-align:left; -webkit-tap-highlight-color:transparent; border-radius:24px;
+  }
+  .bottle:focus-visible{outline:2px solid rgba(255,255,255,.7); outline-offset:10px}
+  /* Standing on something: a soft pool of shadow at the base, painted before
+     the photo so the bottle's dark base sits in it. */
+  .pool{
+    position:absolute; left:8%; right:8%; bottom:.6%; height:3.2%; border-radius:50%;
+    background:radial-gradient(ellipse at center, rgba(0,0,0,.75), rgba(0,0,0,.35) 45%, transparent 72%);
+    filter:blur(6px);
+  }
+  .glass{
+    position:absolute; inset:0; width:100%; height:100%; display:block;
+    mix-blend-mode:screen; pointer-events:none; user-select:none;
+  }
+  /* The label stage: same box as the photo, and the container that cqw
+     measures against. */
+  .stage{position:absolute; inset:0; container-type:inline-size}
+
+  /* ---- The label cylinder ------------------------------------------------ */
+  /* Exactly the photo's silver band, measured from the pixels. */
+  .wrap{position:absolute; left:5.88%; width:88.25%; top:36.38%; height:46.32%}
+  .cyl{
+    position:absolute; inset:0; transform-style:preserve-3d;
+    transition:transform 1.15s cubic-bezier(.22,.75,.18,1);
+  }
+  .bottle[aria-pressed="true"] .cyl{transform:rotateY(180deg)}
+  .face{
+    position:absolute; top:0; left:50%; height:100%; overflow:hidden;
+    -webkit-backface-visibility:hidden; backface-visibility:hidden;
+  }
+  .strip{position:absolute; top:0; height:100%; display:flex}
+  /* Transparent: the photograph's real silver is the label stock. */
+  .half{position:relative; width:50%; height:100%}
+  /* A little of the room's light on the printed panels, over the cylinder and
+     not rotating with it. Gentle — the photo already lights the metal. */
+  .shade{
+    position:absolute; inset:0; pointer-events:none;
+    background:linear-gradient(90deg,
+      rgba(0,0,0,.4) 0%, rgba(0,0,0,.16) 9%, rgba(255,255,255,0) 20%,
+      rgba(255,255,255,.14) 30%, rgba(255,255,255,.03) 44%, rgba(0,0,0,0) 56%,
+      rgba(0,0,0,.1) 76%, rgba(0,0,0,.26) 90%, rgba(0,0,0,.46) 100%);
+  }
+
+  /* Front half: a printed panel on the silver. Yellow field, a keyline, a
+     glow behind the mark, carbonation, and a wedge — because it is one. */
+  .sun{
+    position:absolute; left:13cqw; right:13cqw; top:50%; height:112cqw; transform:translateY(-54%);
+    border-radius:2cqw; overflow:hidden;
+    background:
+      radial-gradient(ellipse 70% 60% at 30% 12%, #FFE58A, rgba(255,229,138,0) 62%),
+      radial-gradient(ellipse 80% 70% at 88% 100%, #E8861A, rgba(232,134,26,0) 60%),
+      linear-gradient(165deg, #FFD452 0%, #F6B62D 55%, #EB9A1F 100%);
+    box-shadow:0 0 0 .25cqw rgba(0,0,0,.12);
+  }
+  .keyline{position:absolute; inset:2.2cqw; border:.32cqw solid rgba(10,90,46,.42); border-radius:1.3cqw; pointer-events:none}
+  .bubbles{position:absolute; inset:0; width:100%; height:100%}
+  .glow{position:absolute; left:50%; top:36%; width:78cqw; height:48cqw; transform:translate(-50%,-50%);
+        background:radial-gradient(ellipse at center, rgba(255,255,255,.55), rgba(255,255,255,0) 66%)}
+  .wm{
+    position:absolute; left:50%; top:12cqw; width:80cqw; transform:translateX(-50%);
+    font-family:Lobster,"Brush Script MT","Segoe Script",cursive; font-style:italic; line-height:.86;
+  }
+  .diet{display:block; font-size:7.6cqw; color:var(--leaf); padding-left:10cqw; letter-spacing:.15cqw; margin-bottom:-.4cqw}
+  .wedge{
+    display:block; text-align:center; font-size:25.5cqw; color:#fff; letter-spacing:-.4cqw;
+    -webkit-text-stroke:.55cqw var(--leaf); paint-order:stroke fill;
+    text-shadow:0 .8cqw 0 var(--leaf), 0 1.9cqw 2.6cqw rgba(70,45,0,.18);
+  }
+  .flavor{display:block; text-align:right; font-size:10.8cqw; color:var(--leaf); padding-right:6cqw; margin-top:.3cqw; text-shadow:0 .3cqw 0 rgba(255,255,255,.55)}
+  .wedgeart{position:absolute; right:5cqw; bottom:-3cqw; width:50cqw; height:50cqw}
+  /* In the silver below the panel, like the can. */
+  .fine{
+    position:absolute; left:18cqw; right:18cqw; bottom:4.6cqw; margin:0;
+    font-size:2.5cqw; line-height:1.35; letter-spacing:.12cqw; text-transform:uppercase; font-weight:700;
+    display:flex; justify-content:space-between; align-items:flex-end; gap:3cqw; color:var(--leaf-deep);
+  }
+  .fine span{max-width:50%}
+  .fine b{white-space:nowrap; font-size:2.7cqw}
+
+  /* Back half: Nutrition Facts, by the book. Recognizable from ten feet away,
+     which is what lets it carry a bio without explaining itself. Narrower than
+     the yellow so its edges stay readable as they curve away. */
+  .facts{
+    position:absolute; left:31cqw; right:31cqw; top:50%; transform:translateY(-50%);
+    background:var(--cream); color:var(--black); border-radius:2cqw;
+    border:.5cqw solid var(--black); padding:1.8cqw 2.6cqw 2cqw; overflow:hidden;
+    font-family:Helvetica, Arial, system-ui, sans-serif; display:flex; flex-direction:column;
+    box-shadow:0 0 0 .25cqw rgba(0,0,0,.12);
+  }
+  .facts h1{margin:0; font-size:6cqw; line-height:1; font-weight:900; letter-spacing:-.22cqw; white-space:nowrap; padding-bottom:.8cqw; border-bottom:.3cqw solid var(--black)}
+  .srv{display:flex; justify-content:space-between; font-size:2.9cqw; padding:.7cqw 0 0}
+  .rule{border:0; border-top:1.9cqw solid var(--black); margin:.9cqw 0 .6cqw}
+  .rule.mid{border-top-width:1cqw}
+  .amt{font-size:2.4cqw; font-weight:800; margin:.4cqw 0 0}
+  .cal{display:flex; justify-content:space-between; align-items:baseline; font-weight:900; font-size:6.2cqw; line-height:1; padding:.4cqw 0 1cqw; border-bottom:1cqw solid var(--black)}
+  .row{display:flex; justify-content:space-between; gap:2.4cqw; align-items:baseline; padding:.66cqw 0; border-bottom:.28cqw solid var(--black); font-size:3cqw; line-height:1.38}
+  .row b{font-weight:800}
+  .row span{text-align:right}
+  .row.last{border-bottom:0}
+  .note{font-size:2.4cqw; line-height:1.32; margin:1.6cqw 0 0; padding-top:.9cqw; border-top:1cqw solid var(--black); color:#222}
+
+  /* ---- Around the bottle ------------------------------------------------- */
+  .hint{
+    margin:22px 0 0; font-size:12.5px; letter-spacing:.6px; text-transform:uppercase;
+    color:rgba(251,250,246,.42); display:inline-flex; align-items:center; gap:8px;
+  }
+  .hint svg{width:14px; height:14px; opacity:.8}
+  .line{
+    text-align:center; margin:30px 8px 0; font-size:15px; letter-spacing:.2px;
+    color:rgba(251,250,246,.86); opacity:0; transform:translateY(6px);
+    transition:opacity .7s ease .3s, transform .7s ease .3s;
+  }
+  main.turned .line{opacity:1; transform:none}
+  footer{text-align:center; margin:40px 8px 0; font-size:11.5px; line-height:1.7; color:rgba(251,250,246,.42)}
+  footer a{color:rgba(251,250,246,.66); text-decoration:none; border-bottom:1px solid rgba(251,250,246,.22)}
+  footer a:hover{color:#fff; border-color:#fff}
+
+  @media (prefers-reduced-motion:reduce){
+    .fizz{display:none}
+    .cyl{transition:none}
+    .line{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="fizz" aria-hidden="true">
+  <i style="left:14%; width:6px; height:6px; animation-duration:13s; animation-delay:-2s; --sway:10px"></i>
+  <i style="left:27%; width:4px; height:4px; animation-duration:17s; animation-delay:-9s; --sway:-8px"></i>
+  <i style="left:44%; width:8px; height:8px; animation-duration:15s; animation-delay:-5s; --sway:6px"></i>
+  <i style="left:58%; width:5px; height:5px; animation-duration:19s; animation-delay:-12s; --sway:-12px"></i>
+  <i style="left:71%; width:7px; height:7px; animation-duration:14s; animation-delay:-7s; --sway:9px"></i>
+  <i style="left:86%; width:4px; height:4px; animation-duration:18s; animation-delay:-1s; --sway:-6px"></i>
+</div>
+
+<main id="main">
+  <button class="bottle" id="bottle" type="button" aria-pressed="false" aria-label="A bottle of diet Wedge grapefruit. Turn it around.">
+    <div class="pool" aria-hidden="true"></div>
+    <img class="glass" src="bottle.webp" alt="" width="834" height="2595" draggable="false" fetchpriority="high">
+    <div class="stage" aria-hidden="true">
+      <div class="wrap">
+        <div class="cyl" id="cyl"></div>
+        <div class="shade"></div>
+      </div>
+    </div>
+  </button>
+
+  <p class="hint" id="hint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 3v6h6"/></svg>
+    <span id="hinttext">turn it around</span>
+  </p>
+
+  <p class="line">The soda was discontinued. The name wasn&rsquo;t.</p>
+
+  <footer>
+    &copy; <span id="yr">2026</span> dietwedge
+    &nbsp;&middot;&nbsp; Not affiliated with Wegmans. They stopped making it.
+    <br><a href="https://nyonic.com">nyonic.com</a>
+  </footer>
+</main>
+
+<!-- One continuous strip: front half, back half. Every face gets a copy and
+     shows its own slice. -->
+<template id="strip">
+  <div class="strip">
+    <div class="half front">
+      <div class="sun">
+        <div class="glow"></div>
+        <svg class="bubbles" viewBox="0 0 320 360" preserveAspectRatio="xMidYMid slice">
+          <g fill="#fff">
+            <circle cx="22" cy="40" r="4.5" opacity=".5"/><circle cx="48" cy="18" r="2.2" opacity=".5"/>
+            <circle cx="86" cy="52" r="3" opacity=".42"/><circle cx="140" cy="14" r="2.6" opacity=".5"/>
+            <circle cx="205" cy="30" r="5.2" opacity=".45"/><circle cx="248" cy="58" r="2.4" opacity=".45"/>
+            <circle cx="290" cy="22" r="3.4" opacity=".4"/><circle cx="30" cy="112" r="2.2" opacity=".45"/>
+            <circle cx="14" cy="160" r="6" opacity=".45"/><circle cx="60" cy="176" r="2.6" opacity=".4"/>
+            <circle cx="96" cy="140" r="1.8" opacity=".5"/><circle cx="118" cy="188" r="3.6" opacity=".38"/>
+            <circle cx="160" cy="166" r="2" opacity=".5"/><circle cx="196" cy="128" r="4.4" opacity=".4"/>
+            <circle cx="236" cy="150" r="2.4" opacity=".5"/><circle cx="300" cy="118" r="3.2" opacity=".42"/>
+            <circle cx="40" cy="230" r="3.2" opacity=".42"/><circle cx="72" cy="262" r="5.4" opacity=".45"/>
+            <circle cx="108" cy="238" r="2.2" opacity=".5"/><circle cx="136" cy="280" r="3.8" opacity=".4"/>
+            <circle cx="20" cy="296" r="2.4" opacity=".45"/><circle cx="176" cy="236" r="2.6" opacity=".45"/>
+            <circle cx="92" cy="90" r="7" opacity=".26"/><circle cx="228" cy="88" r="8" opacity=".22"/>
+            <circle cx="160" cy="96" r="2.2" opacity=".5"/><circle cx="286" cy="206" r="6.4" opacity=".28"/>
+            <circle cx="308" cy="270" r="2.8" opacity=".45"/><circle cx="264" cy="252" r="2" opacity=".5"/>
+            <circle cx="46" cy="330" r="3.4" opacity=".42"/><circle cx="150" cy="340" r="2.4" opacity=".5"/>
+            <circle cx="210" cy="322" r="5" opacity=".3"/>
+          </g>
+          <g fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity=".7">
+            <path d="M88 86 a5 5 0 0 1 4 -3"/><path d="M223 83 a6 6 0 0 1 5 -3.5"/>
+            <path d="M10 157 a4.5 4.5 0 0 1 3.5 -2.6"/><path d="M68 259 a4 4 0 0 1 3.2 -2.4"/>
+          </g>
+        </svg>
+        <div class="keyline"></div>
+        <div class="wm">
+          <span class="diet">diet</span>
+          <span class="wedge">Wedge</span>
+          <span class="flavor">grapefruit</span>
+        </div>
+        <!-- A wedge. Rind, pith, flesh, membranes, a couple of drops. -->
+        <svg class="wedgeart" viewBox="0 0 100 100">
+          <defs>
+            <radialGradient id="flesh" cx="40%" cy="40%" r="75%">
+              <stop offset="0" stop-color="#FFDC72"/><stop offset=".65" stop-color="#F8B93A"/><stop offset="1" stop-color="#EA951F"/>
+            </radialGradient>
+          </defs>
+          <g transform="rotate(-18 50 58)">
+            <path d="M50 58 L14 22 A50 50 0 0 1 86 22 Z" fill="#E27F17"/>
+            <path d="M50 58 L19 27 A43.5 43.5 0 0 1 81 27 Z" fill="#FFF0C6"/>
+            <path d="M50 58 L23 31 A38 38 0 0 1 77 31 Z" fill="url(#flesh)"/>
+            <g stroke="#FFF3CF" stroke-width="2" stroke-linecap="round" fill="none">
+              <path d="M50 58 L50 20"/><path d="M50 58 L31 28"/><path d="M50 58 L69 28"/>
+              <path d="M50 58 L26 40"/><path d="M50 58 L74 40"/>
+            </g>
+            <path d="M32 40 C36 30, 44 24, 52 22" stroke="#fff" stroke-width="2.2" stroke-linecap="round" fill="none" opacity=".5"/>
+          </g>
+          <circle cx="14" cy="76" r="2.6" fill="#FFF6D6" opacity=".9"/>
+          <circle cx="23" cy="88" r="1.7" fill="#FFF6D6" opacity=".8"/>
+          <path d="M6 66 C10 58, 18 54, 26 56" stroke="#FFF6D6" stroke-width="2.4" stroke-linecap="round" fill="none" opacity=".85"/>
+        </svg>
+      </div>
+      <p class="fine">
+        <span>Grapefruit flavored soda with other natural flavors</span>
+        <b>20 fl oz (1.25 pt) 591 mL</b>
+      </p>
+    </div>
+
+    <div class="half back">
+      <div class="facts">
+        <h1>Nutrition Facts</h1>
+        <div class="srv"><span>Serving size</span><b>1 person</b></div>
+        <div class="srv"><span>Servings per container</span><b>1</b></div>
+        <hr class="rule">
+        <p class="amt">Amount per serving</p>
+        <div class="cal"><span>Calories</span><span>0</span></div>
+        <div class="row"><b>Grapefruit</b><span>100%</span></div>
+        <div class="row"><b>Sugar</b><span>0 g</span></div>
+        <div class="row"><b>Filler</b><span>0%</span></div>
+        <hr class="rule mid">
+        <div class="row"><b>Rochester, NY</b><span>100%</span></div>
+        <div class="row"><b>Cameras</b><span>20 years, then set down</span></div>
+        <div class="row"><b>Software</b><span>daily</span></div>
+        <div class="row"><b>Patience</b><span>varies</span></div>
+        <div class="row last"><b>Still carbonated</b><span>yes</span></div>
+        <p class="note">* Named after a can that happened to be on a desk the day a screen name was needed. The name stuck. The soda didn&rsquo;t.</p>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+(function(){
+  document.getElementById("yr").textContent = new Date().getFullYear();
+
+  var wrap = document.querySelector(".wrap"),
+      cyl  = document.getElementById("cyl"),
+      tpl  = document.getElementById("strip"),
+      N    = 40;                       // faces; 9 degrees each
+
+  // Stand N faces around a cylinder whose diameter is the label's width. Face
+  // i covers the arc [i*fw, (i+1)*fw) of a strip C long; its centre sits at
+  // angle (i+0.5)*step, shifted by -90deg so the strip's first quarter — the
+  // middle of the front design — faces the viewer at rest.
+  function build(){
+    var W = wrap.clientWidth, r = W / 2, C = 2 * Math.PI * r, fw = C / N, step = 360 / N;
+    if (!W) return;
+    cyl.replaceChildren();
+    for (var i = 0; i < N; i++){
+      var f = document.createElement("div");
+      f.className = "face";
+      f.style.width = (fw + 0.9) + "px";              // a hair of overlap hides seams
+      f.style.marginLeft = (-(fw + 0.9) / 2) + "px";
+      f.style.transform = "rotateY(" + ((i + 0.5) * step - 90) + "deg) translateZ(" + r + "px)";
+      var s = tpl.content.firstElementChild.cloneNode(true);
+      s.style.width = C + "px";
+      s.style.left  = (-i * fw) + "px";
+      f.appendChild(s);
+      cyl.appendChild(f);
+    }
+  }
+  build();
+  if ("ResizeObserver" in window) new ResizeObserver(build).observe(wrap);
+  else window.addEventListener("resize", build);
+
+  var b = document.getElementById("bottle"), m = document.getElementById("main"),
+      t = document.getElementById("hinttext"), turned = false;
+  b.addEventListener("click", function(){
+    turned = !turned;
+    b.setAttribute("aria-pressed", turned ? "true" : "false");
+    if (turned) m.classList.add("turned");
+    t.textContent = turned ? "turn it back" : "turn it around";
+  });
+})();
+</script>
+</body>
+</html>
